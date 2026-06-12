@@ -1,13 +1,11 @@
 HEAD
 # insurance-voice-ai-assistant
 
-# Kavya Premium Insurance - Voice-First AI Assistant 🎙️
+# Voice-First AI Assistant 🎙️
 
-Welcome to the **Kavya Premium Insurance** repository! This project is a fully autonomous, voice-guided enterprise insurance enrollment portal. 
+This project is a fully autonomous, voice-guided enterprise insurance enrollment portal. 
 
 ## 1. 🎯 Purpose
-
-What started as an experimental project to help my daughter complete her homework by speaking and auto-correcting her English instead of typing, quickly evolved into an enterprise-grade use case. 
 
 Future generations are not going to tolerate long, tedious forms. They expect seamless, conversational, and voice-guided interfaces. The purpose of this project is to demonstrate how a traditional form-based flow can be transformed into a **Voice-First AI Experience**, reducing friction and making customer onboarding accessible and conversational.
 
@@ -87,8 +85,6 @@ The codebase is highly modularized for easy maintenance:
 * **`src/hooks/useQicVoiceLoop.jsx` (The Ears):** A custom React Hook managing the Web Speech API. It includes a 2.5-second silence debouncer to ensure users finish their sentences (or long ID numbers) before sending the payload. It strictly manages the mic state, including auto-muting after 1 minute of complete silence.
 * **`src/service/groqRouter.jsx` (The Brain):** The bridge to the Groq API. It takes raw text, current screen context, and dictionary schemas, then prompts Llama 3.3 to extract intents into strict JSON payloads. 
 * **`src/utils/voiceOutput.jsx` (The Mouth):** Controls the `SpeechSynthesis` engine. When it talks, it locks the system (`sysSpeaking = true`) so the microphone doesn't accidentally transcribe the system's own voice.
-
-![Architectural Flow](architecture_flow.png)
 
 ## 5. ✨ Unique Captures & Features
 
