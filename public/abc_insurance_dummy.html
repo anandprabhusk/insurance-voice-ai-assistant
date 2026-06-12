@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QIC Premium Insurance</title>
+    <style>
+        :root {
+            --primary: #002d72;
+            --secondary: #e6b800;
+            --bg: #f8f9fa;
+            --text: #333;
+            --success: #28a745;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            width: 100%;
+            padding: 20px 40px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .logo { font-weight: bold; font-size: 24px; color: var(--primary); }
+
+        .main-wrapper {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 50px;
+            gap: 30px;
+        }
+
+        /* Stepper Workflow Styles */
+        .stepper {
+            width: 250px;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 35px;
+            bottom: -20px;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        .step-item.active:not(:last-child)::after, 
+        .step-item.completed:not(:last-child)::after {
+            background: var(--primary);
+        }
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        .step-item.active .step-circle { background: var(--primary); }
+        .step-item.completed .step-circle { background: var(--success); content: '✓'; }
+
+        .step-content { flex-grow: 1; }
+        .step-title { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
+        .step-value { font-size: 12px; color: #666; font-style: italic; min-height: 15px;}
+
+        /* Form Container Styles */
+        .container {
+            flex-grow: 1;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .step { display: none; animation: fadeIn 0.3s; }
+        .step.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555;}
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0,45,114,0.2);
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px;}
+        .coverage-btn {
+            flex: 1;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .coverage-btn:hover, .coverage-btn.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            font-size: 16px;
+        }
+        .primary-btn:hover { background: #001f50; }
+
+        /* Quote Result Styles */
+        .quote-result {
+            text-align: center;
+            padding: 20px;
+        }
+        .quote-amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        .quote-plan {
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">QIC PREMIUM</div>
+        <div style="color: #666; font-size: 14px;">Voice Enabled 🎙️</div>
+    </header>
+
+    <div class="main-wrapper">
+        <!-- Sidebar Stepper -->
+        <div class="stepper">
+            <div class="step-item active" id="nav-step-1">
+                <div class="step-circle">1</div>
+                <div class="step-content">
+                    <div class="step-title">Authentication</div>
+                    <div class="step-value" id="val-phone"></div>
+                </div>
+            </div>
+            <div class="step-item" id="nav-step-2">
+                <div class="step-circle">2</div>
+                <div class="step-content">
+                    <div class="step-title">Coverage Plan</div>
+                    <div class="step-value" id="val-plan"></div>
+                </div>
+            </div>
+            <div class="step-item" id="nav-step-3">
+                <div class="step-circle">3</div>
+                <div class="step-content">
+                    <div class="step-title">Vehicle Details</div>
+                    <div class="step-value" id="val-car"></div>
+                </div>
+            </div>
+            <div class="step-item" id="nav-step-4">
+                <div class="step-circle">4</div>
+                <div class="step-content">
+                    <div class="step-title">Registration</div>
+                    <div class="step-value" id="val-reg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form Area -->
+        <div class="container" id="form-container">
+
+            <!-- Step 1: Phone -->
+            <div id="step-1" class="step active">
+                <h2>Welcome to QIC</h2>
+                <p style="color: #666; margin-bottom: 25px;">Please verify your identity to begin.</p>
+                <label>Mobile Number</label>
+                <input type="tel" id="phone" placeholder="e.g., 33445566" maxlength="8">
+                <button class="primary-btn" onclick="processStep1()">Proceed</button>
+            </div>
+
+            <!-- Step 2: Coverage -->
+            <div id="step-2" class="step">
+                <h2>Select Coverage</h2>
+                <p style="color: #666; margin-bottom: 25px;">Choose the protection plan that suits your needs.</p>
+                <div class="btn-group">
+                    <button class="coverage-btn" id="btn-comp" onclick="selectPlan('Comprehensive')">
+                        Comprehensive<br><span style="font-size: 12px; font-weight: normal;">Full coverage</span>
+                    </button>
+                    <button class="coverage-btn" id="btn-tpl" onclick="selectPlan('Third-Party')">
+                        Third-Party<br><span style="font-size: 12px; font-weight: normal;">Basic liability</span>
+                    </button>
+                </div>
+                <!-- Hidden input to store selection for Playwright/Logic -->
+                <input type="hidden" id="selected-plan" value="">
+                <button class="primary-btn" onclick="processStep2()" style="margin-top: 10px;">Continue</button>
+            </div>
+
+            <!-- Step 3: Car Specs -->
+            <div id="step-3" class="step">
+                <h2>Vehicle Details</h2>
+                <p style="color: #666; margin-bottom: 25px;">Tell us about the car you want to insure.</p>
+                <label>Make</label>
+                <input type="text" id="make" placeholder="e.g., Toyota">
+                <label>Model</label>
+                <input type="text" id="model" placeholder="e.g., Land Cruiser">
+                <label>Year</label>
+                <input type="number" id="year" placeholder="e.g., 2023">
+                <button class="primary-btn" onclick="processStep3()">Next</button>
+            </div>
+
+            <!-- Step 4: Registration -->
+            <div id="step-4" class="step">
+                <h2>Registration & ID</h2>
+                <p style="color: #666; margin-bottom: 25px;">Final details required for your quote.</p>
+                <label>Registration Year</label>
+                <input type="number" id="reg-year" placeholder="e.g., 2023">
+                <label>QID Number</label>
+                <input type="text" id="qid" placeholder="11-digit QID" maxlength="11">
+                <button class="primary-btn" onclick="processStep4()">Generate Quote</button>
+            </div>
+
+            <!-- Step 5: Final Quote -->
+            <div id="step-5" class="step">
+                <div class="quote-result">
+                    <h2 style="color: var(--success);">Quote Ready!</h2>
+                    <div class="quote-plan" id="final-plan-display">Comprehensive Plan</div>
+                    <div class="quote-amount"><span style="font-size: 24px;">QAR </span><span id="quote-price">0</span></div>
+                    <p style="color: #666; margin-bottom: 30px;">Valid for 30 days based on the provided details.</p>
+                    <button class="primary-btn" onclick="alert('Proceeding to payment gateway...')">Buy Now</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Data Store
+        const userData = {
+            phone: '',
+            plan: '',
+            make: '',
+            model: '',
+            year: '',
+            regYear: '',
+            qid: ''
+        };
+
+        // Navigation Logic
+        function goToStep(n) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            // Show target step
+            document.getElementById('step-' + n).classList.add('active');
+
+            // Update Stepper UI (Only for steps 1-4)
+            if(n <= 4) {
+                document.querySelectorAll('.step-item').forEach((item, index) => {
+                    item.classList.remove('active', 'completed');
+                    if (index + 1 < n) {
+                        item.classList.add('completed');
+                        // Replace number with checkmark
+                        item.querySelector('.step-circle').innerHTML = '&#10003;'; 
+                    } else if (index + 1 === n) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // Step Processors (Extracts data, updates UI, moves forward)
+        function processStep1() {
+            userData.phone = document.getElementById('phone').value;
+            document.getElementById('val-phone').innerText = userData.phone ? '+974 ' + userData.phone : '';
+            goToStep(2);
+        }
+
+        function selectPlan(planType) {
+            userData.plan = planType;
+            document.getElementById('selected-plan').value = planType;
+
+            // Visual toggle
+            document.getElementById('btn-comp').classList.remove('selected');
+            document.getElementById('btn-tpl').classList.remove('selected');
+
+            if(planType === 'Comprehensive') {
+                document.getElementById('btn-comp').classList.add('selected');
+            } else {
+                document.getElementById('btn-tpl').classList.add('selected');
+            }
+        }
+
+        function processStep2() {
+            // Allow proceed if selected-plan input has value, or fallback to direct button click logic
+            if(!userData.plan && document.getElementById('selected-plan').value) {
+                userData.plan = document.getElementById('selected-plan').value;
+            }
+
+            if(userData.plan) {
+                document.getElementById('val-plan').innerText = userData.plan;
+                goToStep(3);
+            } else {
+                // If Playwright directly clicks the button instead of Continue
+                document.getElementById('val-plan').innerText = 'Selected';
+                goToStep(3);
+            }
+        }
+
+        function processStep3() {
+            userData.make = document.getElementById('make').value;
+            userData.model = document.getElementById('model').value;
+            userData.year = document.getElementById('year').value;
+
+            let carSummary = [userData.make, userData.model, userData.year].filter(Boolean).join(' ');
+            document.getElementById('val-car').innerText = carSummary;
+
+            goToStep(4);
+        }
+
+        function processStep4() {
+            userData.regYear = document.getElementById('reg-year').value;
+            userData.qid = document.getElementById('qid').value;
+
+            document.getElementById('val-reg').innerText = `QID: ${userData.qid.substring(0,4)}...`;
+
+            generateQuote();
+            goToStep(5);
+        }
+
+        function generateQuote() {
+            const planType = userData.plan || document.getElementById('selected-plan').value || 'Comprehensive';
+            document.getElementById('final-plan-display').innerText = `${planType} Motor Insurance`;
+
+            let basePrice = 0;
+            if (planType.includes('Comprehensive')) {
+                // Random variation between 2000 and 2500
+                basePrice = 2000 + Math.floor(Math.random() * 500); 
+            } else {
+                // Fixed base for TPL, slightly randomized based on year
+                basePrice = 600;
+                if(userData.year && parseInt(userData.year) < 2015) {
+                    basePrice += 150; // Older cars penalty
+                }
+            }
+
+            document.getElementById('quote-price').innerText = basePrice.toLocaleString();
+        }
+    </script>
+</body>
+</html>
