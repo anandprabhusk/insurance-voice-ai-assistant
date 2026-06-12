@@ -1,12 +1,10 @@
-Semonstrate how a traditional form-based flow can be transformed into a **Voice-First AI Experience**, reducing friction and making customer onboarding accessible and conversational.
+# Voice-First AI Assistant
 
-# insurance-voice-ai-assistant
-
-# Voice-First AI Assistant 🎙️
+Demonstrate how a traditional form-based flow can be transformed into a **Voice-First AI Experience**, reducing friction and making customer onboarding accessible and conversational.
 
 This project is a fully autonomous, voice-guided enterprise insurance enrollment portal. 
 
-## 1. 🎯 Purpose
+## 1. 🎯 Purpose  🎙️
 
 Future generations are not going to tolerate long, tedious forms. They expect seamless, conversational, and voice-guided interfaces. The purpose of this project is to demonstrate how a traditional form-based flow can be transformed into a **Voice-First AI Experience**, reducing friction and making customer onboarding accessible and conversational.
 
